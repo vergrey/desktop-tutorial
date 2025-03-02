@@ -28,3 +28,60 @@ exe.run() # "Запущен setup.exe"
 • Файлы должны "занимать место" (размер не просто так).
 • Методы у всех классов должны быть уникальными. 
 '''
+
+# Начнем с импорта библиотеки Abstract Base Classes 
+from abc import *
+import os
+import sys
+
+class file(ABC):
+    def __init__(self, name, size, content):
+        self.name = name
+        self.size = size
+        self.content = content
+    
+    def open(self):
+        pass # Везде будет свое
+    
+    def delete(self):
+        os.remove({self.name})
+        print("Deleted")
+
+    def info(self):
+        os.stat({self}).st_size 
+
+# Текстовые файлы  
+class text(file):
+    def __init__(self, name, size, content):
+        self.name = name
+        self.size = size
+        self.content = content
+    
+    def open(self):
+        print({self.content}) 
+
+    def read(self):
+        return self.content
+
+    def append(self, text):
+        self.content += text
+
+# Видео файлы
+class media(file):
+    def __init__(self, name, size, content):
+        self.name = name
+        self.size = size
+        self.content = content
+
+    def play(self):
+        self.play()
+
+# exe файлы
+class exe(file):
+    def __init__(self, name, size, content):
+        self.name = name
+        self.size = size
+        self.content = content
+    
+    def open(self):
+        self.run() 
