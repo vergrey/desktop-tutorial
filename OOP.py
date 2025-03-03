@@ -32,11 +32,12 @@ import os
 import sys
 import platform
 
-class file(ABC):
-    def __init__(self, name, size, content):
+class File(ABC):
+    def __init__(self, name, size, content=""):
         self.name = name
         self.size = size
         self.content = content
+    
     @abstractmethod
     def open(self):
         pass # That's for everyone unique
@@ -50,17 +51,18 @@ class file(ABC):
     def info(self):
         try:
             self.size = os.stat(self.name).st_size # Size in real bytes 
+            return self.size
+            print("Size: {self.size}")
         except FileNotFoundError:
             return 0
-        print("Size: {self.size}")
 
-# Text files  
-class text(file):
+# Text files 
+class text_file(File):
     def __init__(self, name, size, content):
         super().__init__(name, size ,content) # Inheritance from parent (file)
     
     def open(self):
-        print({self.content}) 
+        print(self.content) 
 
     def read(self):
         return self.content
@@ -69,17 +71,33 @@ class text(file):
         self.content += text
 
 # Video files
-class media(file):
+class media_file(File):
     def __init__(self, name, size, content):
         super().__init__(name, size ,content)
+    
+    def open(self):
+        print('Opening...')
 
     def play(self):
         os.startfile(self.name) # Using base Windows media player
 
 # Executable files
-class exe(file):
+class exe_file(File):
     def __init__(self, name, size, content):
         super().__init__(name, size ,content)
+
+    def open(self):
+        print('Opening...')
     
     def run(self):
         os.startfile(self.name)
+
+# Check 
+try:
+    with open("Text.txt", "r") as f:
+        file_content = f.read()  # Read the file
+
+    text_file = text_file("Text.txt", "{self.info}" , file_content)
+    text_file.open()  # Opening the file
+except FileNotFoundError:
+    print("Text.txt not found.")
