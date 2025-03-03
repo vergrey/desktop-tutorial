@@ -1,7 +1,4 @@
 '''
-Описание
-Создать объектно-ориентированную систему управления файлами. Каждый файл ведет себя посвоему в зависимости от типа.
-
 Требования к ООП-реализации
     1. Абстрактный класс File (Файл)
         o Атрибуты: name (название), size (размер), content (содержимое).
@@ -29,33 +26,38 @@ exe.run() # "Запущен setup.exe"
 • Методы у всех классов должны быть уникальными. 
 '''
 
-# Начнем с импорта библиотеки Abstract Base Classes 
+# Started from imported libraries Abstract Base Classes, OS, System, Platform
 from abc import *
 import os
 import sys
+import platform
 
 class file(ABC):
     def __init__(self, name, size, content):
         self.name = name
         self.size = size
         self.content = content
-    
+    @abstractmethod
     def open(self):
-        pass # Везде будет свое
+        pass # That's for everyone unique
     
     def delete(self):
-        os.remove({self.name})
-        print("Deleted")
+        if os.path.exists(self.name): # Check existing of the file
+            os.remove(self.name)
+        else:
+            print("File doesn't exist")
 
     def info(self):
-        os.stat({self}).st_size 
+        try:
+            self.size = os.stat(self.name).st_size # Size in real bytes 
+        except FileNotFoundError:
+            return 0
+        print("Size: {self.size}")
 
-# Текстовые файлы  
+# Text files  
 class text(file):
     def __init__(self, name, size, content):
-        self.name = name
-        self.size = size
-        self.content = content
+        super().__init__(name, size ,content) # Inheritance from parent (file)
     
     def open(self):
         print({self.content}) 
@@ -66,22 +68,18 @@ class text(file):
     def append(self, text):
         self.content += text
 
-# Видео файлы
+# Video files
 class media(file):
     def __init__(self, name, size, content):
-        self.name = name
-        self.size = size
-        self.content = content
+        super().__init__(name, size ,content)
 
     def play(self):
-        self.play()
+        os.startfile(self.name) # Using base Windows media player
 
-# exe файлы
+# Executable files
 class exe(file):
     def __init__(self, name, size, content):
-        self.name = name
-        self.size = size
-        self.content = content
+        super().__init__(name, size ,content)
     
-    def open(self):
-        self.run() 
+    def run(self):
+        os.startfile(self.name)
