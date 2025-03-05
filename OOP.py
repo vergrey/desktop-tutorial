@@ -33,7 +33,7 @@ import sys
 import platform
 
 class File(ABC):
-    def __init__(self, name, size, content=""):
+    def __init__(self, name, size, content):
         self.name = name
         self.size = size
         self.content = content
@@ -45,16 +45,16 @@ class File(ABC):
     def delete(self):
         if os.path.exists(self.name): # Check existing of the file
             os.remove(self.name)
+            print("File has been deleted")
         else:
             print("File doesn't exist")
 
     def info(self):
-        try:
-            self.size = os.stat(self.name).st_size # Size in real bytes 
-            return self.size
-            print("Size: {self.size}")
-        except FileNotFoundError:
-            return 0
+        if os.path.exists(self.name): # Size in real bytes 
+            file_stats = os.stat(self.name)
+            print(f"File: {self.name}. Size: {file_stats.st_size} bytes")
+        else:
+            print("Nothing there")
 
 # Text files 
 class text_file(File):
@@ -93,11 +93,6 @@ class exe_file(File):
         os.startfile(self.name)
 
 # Check 
-try:
-    with open("Text.txt", "r") as f:
-        file_content = f.read()  # Read the file
-
-    text_file = text_file("Text.txt", "{self.info}" , file_content)
-    text_file.open()  # Opening the file
-except FileNotFoundError:
-    print("Text.txt not found.")
+text_file = text_file("Text.txt", {text_file.info}, {text_file.open})
+text_file.info()
+text_file.open()
