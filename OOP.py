@@ -38,10 +38,6 @@ class File(ABC):
         self.size = size
         self.content = content
     
-    @abstractmethod
-    def open(self):
-        pass # That's for everyone unique
-    
     def delete(self):
         if os.path.exists(self.name): # Check existing of the file
             os.remove(self.name)
@@ -54,45 +50,68 @@ class File(ABC):
             file_stats = os.stat(self.name)
             print(f"File: {self.name}. Size: {file_stats.st_size} bytes")
         else:
-            print("Nothing there")
+            print("File does not exist")
 
 # Text files 
-class text_file(File):
-    def __init__(self, name, size, content):
+class TextFile(File):
+    def __init__(self, name):
+
+        if os.path.exists(name):
+            with open(name, 'r') as file:
+                content = file.read()
+            size = os.path.getsize(name)
+        else:
+            content = ""
+            size = 0
+
         super().__init__(name, size ,content) # Inheritance from parent (file)
-    
-    def open(self):
-        print(self.content) 
 
     def read(self):
-        return self.content
+        print(self.content)
 
     def append(self, text):
+        with open(self.name, 'a') as file:
+            file.write(text)
         self.content += text
 
 # Video files
-class media_file(File):
-    def __init__(self, name, size, content):
+class MediaFile(File):
+    def __init__(self, name):
+        if os.path.exists(name):
+            size = os.path.getsize(name)
+            content = "Media content"
+        else:
+            content = ""
+            size = 0
         super().__init__(name, size ,content)
-    
-    def open(self):
-        print('Opening...')
 
     def play(self):
         os.startfile(self.name) # Using base Windows media player
 
 # Executable files
-class exe_file(File):
-    def __init__(self, name, size, content):
+class ExeFile(File):
+    def __init__(self, name):
+        if os.path.exists(name):
+            size = os.path.getsize(name)
+            content = "Executable content" 
+        else:
+            content = ""
+            size = 0
         super().__init__(name, size ,content)
-
-    def open(self):
-        print('Opening...')
     
     def run(self):
         os.startfile(self.name)
 
+
 # Check 
-text_file = text_file("Text.txt", {text_file.info}, {text_file.open})
+text_file = TextFile("Text.txt")
 text_file.info()
-text_file.open()
+text_file.read()
+
+media_file = MediaFile("xd.mp4")
+media_file.info()
+media_file.play()
+
+media_file = ExeFile("")
+media_file.info()
+media_file.run()
