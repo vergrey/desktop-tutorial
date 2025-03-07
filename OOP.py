@@ -103,15 +103,32 @@ class ExeFile(File):
         os.startfile(self.name)
 
 
-# Check 
-text_file = TextFile("Text.txt")
-text_file.info()
-text_file.read()
+# Interaction
+x = int(input("Option 1: Open TXT. Option 2: Open MP4. Option 3: Open EXE \n"))
 
-media_file = MediaFile("xd.mp4")
-media_file.info()
-media_file.play()
+if x not in [1, 2, 3]:
+    print("Not an option")
+else:
+    FileName = input("Write file name with extension (.txt, .mp4, .exe) \n")
 
-media_file = ExeFile("")
-media_file.info()
-media_file.run()
+match x:
+    case 1:
+        text_file = TextFile(FileName)
+        y = input("Do you want to edit your file? yes/no \n")
+        if y == "yes" or y == "Yes":
+            fileAppend = input("")
+            text_file.append(fileAppend)
+        else:
+            pass
+        text_file.info()
+        text_file.read()
+    case 2:
+        media_file = MediaFile(FileName)
+        media_file.info()
+        media_file.play()
+    case 3:
+        media_file = ExeFile(FileName)
+        media_file.info()
+        media_file.run()
+    case _:
+        print("Doesn't exist")
