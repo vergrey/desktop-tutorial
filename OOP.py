@@ -1,36 +1,34 @@
 '''
-Требования к ООП-реализации
-    1. Абстрактный класс File (Файл)
-        o Атрибуты: name (название), size (размер), content (содержимое).
-        o Метод open(self), который открывает файл и выполняет действие (зависит от типа).
-        o Метод delete(self), который "удаляет" файл.
-    2. Разные типы файлов (наследники File)
-        o Текстовый файл (TextFile) – умеет считывать текст (read()), дописывать (append()).
-        o Медиафайл (MediaFile) – умеет проигрываться (play()).
-        o Исполняемый файл (ExecutableFile) – умеет запускаться (run()).
-    3. Работа с файлами
-        o Создай список файлов разных типов.
-        o Напиши код, который случайным образом "работает" с разными файлами.
+Requirements for OOP implementation
+    1. abstract class File
+        o Attributes: name, size, content.
+        o Open(self) method that opens the file and performs an action (type-dependent).
+        o The delete(self) method, which ‘deletes’ the file.
+    2. Different file types (File inheritors)
+        o Text file (TextFile) - can read text (read()), append()).
+        o Media file (MediaFile) - can play (play()).
+        o Executable file (ExecutableFile) - can run (run()).
+    3. Work with files
+        o Create a list of different types of files.
+        o Write code that randomly ‘works’ with different files.
 
-Пример работы системы
-text = TextFile("story.txt", "Жил-был кот...")
-video = MediaFile("movie.mp4", size=700)
-exe = ExecutableFile("setup.exe", size=150)
-text.open() # "Открыт story.txt: Жил-был кот..."
-video.play() # "Проигрывается movie.mp4"
-exe.run() # "Запущен setup.exe"
+Example of how the system works
+text = TextFile(‘story.txt’, ‘Once upon a time there was a cat...’)
+video = MediaFile(‘movie.mp4’, size=700)
+exe = ExecutableFile(‘setup.exe’, size=150)
+text.open() # ‘Open story.txt: Once upon a time there was a cat...’
+video.play() # ‘Movie.mp4 is playing’
+exe.run() # ‘Started setup.exe’
 
-Ограничения:
-• Запрещено использовать if в open() (используй полиморфизм).
-• Файлы должны "занимать место" (размер не просто так).
-• Методы у всех классов должны быть уникальными. 
+Restrictions:
+- It is forbidden to use if in open().
+- Files must ‘take up space’.
+- Methods in all classes must be unique. 
 '''
 
-# Started from imported libraries Abstract Base Classes, OS, System, Platform
+# Started from imported libraries Abstract Base Classes, OS
 from abc import *
 import os
-import sys
-import platform
 
 class File(ABC):
     def __init__(self, name, size, content):
@@ -67,10 +65,13 @@ class TextFile(File):
         super().__init__(name, size ,content) # Inheritance from parent (file)
 
     def read(self):
-        print(self.content)
+        if self.content:
+            print(self.content)
+        else:
+            print("File is empty")
 
     def append(self, text):
-        with open(self.name, 'a') as file:
+        with open(self.name, 'a') as file: # 'a' - append. Opens a file for appending, creates the file if it does not exist
             file.write(text)
         self.content += text
 
@@ -86,7 +87,10 @@ class MediaFile(File):
         super().__init__(name, size ,content)
 
     def play(self):
-        os.startfile(self.name) # Using base Windows media player
+        if os.path.exists(self.name):
+            os.startfile(self.name) # Using base Windows media player
+        else:
+            print("File does not exist")
 
 # Executable files
 class ExeFile(File):
@@ -100,35 +104,61 @@ class ExeFile(File):
         super().__init__(name, size ,content)
     
     def run(self):
-        os.startfile(self.name)
-
+        if os.path.exists(self.name):
+            os.startfile(self.name)
+        else:
+            print("File does not exist")
 
 # Interaction
-x = int(input("Option 1: Open TXT. Option 2: Open MP4. Option 3: Open EXE \n"))
+while True:
+    x = int(input("Choose 1: TXT File. Option 2: MP4 File. Option 3: EXE File \n"))
 
-if x not in [1, 2, 3]:
-    print("Not an option")
-else:
-    FileName = input("Write file name with extension (.txt, .mp4, .exe) \n")
+    if x not in [1, 2, 3]:
+        print("Not an option")
+    else:
+        FileName = input("Write file name with extension (.txt, .mp4, .exe). You can also specify a path to the file but do not forget about extension. \n")
 
-match x:
-    case 1:
-        text_file = TextFile(FileName)
-        y = input("Do you want to edit your file? yes/no \n")
-        if y == "yes" or y == "Yes":
-            fileAppend = input("")
-            text_file.append(fileAppend)
-        else:
-            pass
-        text_file.info()
-        text_file.read()
-    case 2:
-        media_file = MediaFile(FileName)
-        media_file.info()
-        media_file.play()
-    case 3:
-        media_file = ExeFile(FileName)
-        media_file.info()
-        media_file.run()
-    case _:
-        print("Doesn't exist")
+    z = input("What you want? \n 1. File Info \n 2. File Read/Play/Execute \n 3. File Permanent Delete \n")
+
+    if z not in [1, 2, 3]:
+        pass
+    else:
+        break
+
+    match x:
+        
+        case 1:
+            text_file = TextFile(FileName)
+            if z == "1":
+                text_file.info()
+            if z == "2":
+                y = input("Do you want to edit your file? yes/no \n")
+                if y == "yes" or y == "Yes":
+                    fileAppend = input("")
+                    text_file.append(fileAppend)
+                else:
+                    pass
+                text_file.read()
+            if z == "3":
+                text_file.delete()
+
+        case 2:
+            media_file = MediaFile(FileName)
+            if z == "1":
+                media_file.info()
+            if z == "2":
+                media_file.play()
+            if z == "3":
+                media_file.delete()
+
+        case 3:
+            exe_file = ExeFile(FileName)
+            if z == "1":
+                exe_file.info()
+            if z == "2":
+                exe_file.run()
+            if z == "3":
+                exe_file.delete()
+
+        case _:
+            print("Doesn't exist") # In the event that all previous checks have somehow failed
