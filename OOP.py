@@ -36,6 +36,10 @@ class File(ABC):
         self.size = size
         self.content = content
     
+    @abstractmethod
+    def open(self):
+        pass
+
     def delete(self):
         if os.path.exists(self.name): # Check existing of the file
             os.remove(self.name)
@@ -64,6 +68,9 @@ class TextFile(File):
 
         super().__init__(name, size ,content) # Inheritance from parent (file)
 
+    def open(self):
+        self.read()
+
     def read(self):
         if self.content:
             print(self.content)
@@ -86,6 +93,9 @@ class MediaFile(File):
             size = 0
         super().__init__(name, size ,content)
 
+    def open(self):
+        self.play()
+
     def play(self):
         if os.path.exists(self.name):
             os.startfile(self.name) # Using base Windows media player
@@ -103,6 +113,9 @@ class ExeFile(File):
             size = 0
         super().__init__(name, size ,content)
     
+    def open(self):
+        self.run()
+    
     def run(self):
         if os.path.exists(self.name):
             os.startfile(self.name)
@@ -111,54 +124,58 @@ class ExeFile(File):
 
 # Interaction
 while True:
-    x = int(input("Choose 1: TXT File. Option 2: MP4 File. Option 3: EXE File \n"))
-
-    if x not in [1, 2, 3]:
-        print("Not an option")
-    else:
-        FileName = input("Write file name with extension (.txt, .mp4, .exe). You can also specify a path to the file but do not forget about extension. \n")
-
-    z = input("What you want? \n 1. File Info \n 2. File Read/Play/Execute \n 3. File Permanent Delete \n")
-
-    if z not in [1, 2, 3]:
-        pass
-    else:
-        break
-
-    match x:
+    try:
+        x = int(input("Choose 1: TXT File. Option 2: MP4 File. Option 3: EXE File Option 4: Exit \n"))
         
-        case 1:
-            text_file = TextFile(FileName)
-            if z == "1":
-                text_file.info()
-            if z == "2":
-                y = input("Do you want to edit your file? yes/no \n")
-                if y == "yes" or y == "Yes":
-                    fileAppend = input("")
-                    text_file.append(fileAppend)
-                else:
-                    pass
-                text_file.read()
-            if z == "3":
-                text_file.delete()
+        if x == 4:
+            break
+        if x not in [1, 2, 3]:
+            print("Not an option")
+            continue
+        else:
+            FileName = input("Write file name with extension (.txt, .mp4, .exe). You can also specify a path to the file but do not forget about extension. \n")
 
-        case 2:
-            media_file = MediaFile(FileName)
-            if z == "1":
-                media_file.info()
-            if z == "2":
-                media_file.play()
-            if z == "3":
-                media_file.delete()
+        z = input("What you want? \n 1. File Info \n 2. File Read/Play/Execute \n 3. File Permanent Delete \n 4. Back \n")
 
-        case 3:
-            exe_file = ExeFile(FileName)
-            if z == "1":
-                exe_file.info()
-            if z == "2":
-                exe_file.run()
-            if z == "3":
-                exe_file.delete()
+        if z == 4:
+            print("Back to choose")
+            break
+        if z not in ["1", "2", "3", "4"]:
+            print("Not an option")
+            continue
 
-        case _:
-            print("Doesn't exist") # In the event that all previous checks have somehow failed
+        match x:
+            
+            case 1:
+                text_file = TextFile(FileName)
+                if z == "1":
+                    text_file.info()
+                if z == "2":
+                    y = input("Do you want to edit your file? yes/no \n")
+                    if y == "yes" or y == "Yes":
+                        fileAppend = input("Enter text to append: ")
+                        text_file.append(fileAppend)
+                    text_file.open()
+                if z == "3":
+                    text_file.delete()
+
+            case 2:
+                media_file = MediaFile(FileName)
+                if z == "1":
+                    media_file.info()
+                if z == "2":
+                    media_file.open()
+                if z == "3":
+                    media_file.delete()
+
+            case 3:
+                exe_file = ExeFile(FileName)
+                if z == "1":
+                    exe_file.info()
+                if z == "2":
+                    exe_file.open()
+                if z == "3":
+                    exe_file.delete()
+
+    except FileNotFoundError:
+        print("File not found.")
